@@ -7,54 +7,47 @@ import { useProduct } from 'components/product/product-context';
 import { Product, ProductVariant } from 'lib/shopify/types';
 import { useActionState } from 'react';
 import { useCart } from './cart-context';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 function SubmitButton({
   availableForSale,
-  selectedVariantId
+  selectedVariantId,
+  onClick,
+  loading
 }: {
   availableForSale: boolean;
   selectedVariantId: string | undefined;
+  onClick: () => void;
+  loading: boolean;
 }) {
-  const buttonClasses =
-    'relative flex w-full items-center justify-center rounded-full bg-blue-600 p-4 tracking-wide text-white';
-  const disabledClasses = 'cursor-not-allowed opacity-60 hover:opacity-60';
-
   if (!availableForSale) {
     return (
-      <button disabled className={clsx(buttonClasses, disabledClasses)}>
+      <Button disabled variant="secondary" className="w-full">
         Out Of Stock
-      </button>
+      </Button>
     );
   }
 
-  console.log(selectedVariantId);
   if (!selectedVariantId) {
     return (
-      <button
-        aria-label="Please select an option"
-        disabled
-        className={clsx(buttonClasses, disabledClasses)}
-      >
-        <div className="absolute left-0 ml-4">
-          <PlusIcon className="h-5" />
-        </div>
-        Add To Cart
-      </button>
+      <Button disabled variant="secondary" className="w-full">
+        <PlusIcon className="h-5 w-5" />
+        Select an Option
+      </Button>
     );
   }
 
   return (
-    <button
-      aria-label="Add to cart"
-      className={clsx(buttonClasses, {
-        'hover:opacity-90': true
-      })}
+    <Button
+      variant="default"
+      className="w-full"
+      onClick={onClick}
+      disabled={loading}
     >
-      <div className="absolute left-0 ml-4">
-        <PlusIcon className="h-5" />
-      </div>
-      Add To Cart
-    </button>
+      <PlusIcon className="mr-2 h-5 w-5" />
+      {loading ? 'Adding...' : 'Add To Cart'}
+    </Button>
   );
 }
 
@@ -63,6 +56,7 @@ export function AddToCart({ product }: { product: Product }) {
   const { addCartItem } = useCart();
   const { state } = useProduct();
   const [message, formAction] = useActionState(addItem, null);
+  const [loading, setLoading] = useState(false);
 
   const variant = variants.find((variant: ProductVariant) =>
     variant.selectedOptions.every((option) => option.value === state[option.name.toLowerCase()])
@@ -72,14 +66,21 @@ export function AddToCart({ product }: { product: Product }) {
   const actionWithVariant = formAction.bind(null, selectedVariantId);
   const finalVariant = variants.find((variant) => variant.id === selectedVariantId)!;
 
+  const handleAddToCart = async () => {
+    setLoading(true);
+    addCartItem(finalVariant, product);
+    await actionWithVariant();
+    setLoading(false);
+  };
+
   return (
-    <form
-      action={async () => {
-        addCartItem(finalVariant, product);
-        await actionWithVariant();
-      }}
-    >
-      <SubmitButton availableForSale={availableForSale} selectedVariantId={selectedVariantId} />
+    <form>
+      <SubmitButton
+        availableForSale={availableForSale}
+        selectedVariantId={selectedVariantId}
+        loading={loading}
+        onClick={handleAddToCart}
+      />
       <p aria-live="polite" className="sr-only" role="status">
         {message}
       </p>
