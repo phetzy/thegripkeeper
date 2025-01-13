@@ -1,14 +1,12 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import clsx from 'clsx';
 import { addItem } from 'components/cart/actions';
 import { useProduct } from 'components/product/product-context';
 import { Product, ProductVariant } from 'lib/shopify/types';
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { useCart } from './cart-context';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
 
 function SubmitButton({
   availableForSale,
@@ -23,7 +21,7 @@ function SubmitButton({
 }) {
   if (!availableForSale) {
     return (
-      <Button disabled variant="secondary" className="w-full">
+      <Button disabled variant="secondary" className="w-full rounded-full">
         Out Of Stock
       </Button>
     );
@@ -31,8 +29,8 @@ function SubmitButton({
 
   if (!selectedVariantId) {
     return (
-      <Button disabled variant="secondary" className="w-full">
-        <PlusIcon className="h-5 w-5" />
+      <Button disabled variant="secondary" className="w-full rounded-full">
+        <PlusIcon className="h-5 w-5 rounded-md" />
         Select an Option
       </Button>
     );
@@ -41,7 +39,7 @@ function SubmitButton({
   return (
     <Button
       variant="default"
-      className="w-full"
+      className="w-full rounded-full"
       onClick={onClick}
       disabled={loading}
     >
