@@ -5,7 +5,7 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 import { addItem } from 'components/cart/actions';
 import { useProduct } from 'components/product/product-context';
 import { Product, ProductVariant } from 'lib/shopify/types';
-import { useActionState, useState } from 'react';
+import { useActionState, useState, startTransition } from 'react';
 import { useCart } from './cart-context';
 
 function SubmitButton({
@@ -16,7 +16,7 @@ function SubmitButton({
 }: {
   availableForSale: boolean;
   selectedVariantId: string | undefined;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => Promise<void>;
   loading: boolean;
 }) {
   if (!availableForSale) {
@@ -64,15 +64,25 @@ export function AddToCart({ product }: { product: Product }) {
   const actionWithVariant = formAction.bind(null, selectedVariantId);
   const finalVariant = variants.find((variant) => variant.id === selectedVariantId)!;
 
-  const handleAddToCart = async () => {
-    setLoading(true);
-    addCartItem(finalVariant, product);
-    await actionWithVariant();
-    setLoading(false);
+  const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      startTransition(async () => {
+        // First trigger the server action
+        await actionWithVariant();
+        // Then update the local cart state
+        addCartItem(finalVariant, product);
+      });
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <form>
+    <form onSubmit={(e) => e.preventDefault()}>
       <SubmitButton
         availableForSale={availableForSale}
         selectedVariantId={selectedVariantId}
