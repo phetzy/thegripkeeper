@@ -10,8 +10,6 @@ import { HIDDEN_PRODUCT_TAG } from 'lib/constants';
 import { getProduct, getProductRecommendations } from 'lib/shopify';
 import { Image } from 'lib/shopify/types';
 
-export const runtime = 'edge';
-
 export async function generateMetadata({
   params
 }: {
