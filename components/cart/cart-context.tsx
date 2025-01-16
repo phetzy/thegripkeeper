@@ -153,7 +153,7 @@ export function CartProvider({
   cartPromise: Promise<Cart | undefined>;
 }) {
   const initialCart = use(cartPromise);
-  const [optimisticCart, updateOptimisticCart] = useOptimistic(initialCart, cartReducer);
+  const [optimisticCart, updateOptimisticCart] = useOptimistic(initialCart || createEmptyCart(), cartReducer);
 
   const updateCartItem = (merchandiseId: string, updateType: UpdateType) => {
     updateOptimisticCart({ type: 'UPDATE_ITEM', payload: { merchandiseId, updateType } });
