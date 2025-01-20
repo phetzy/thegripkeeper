@@ -5,10 +5,9 @@ import { ShoppingCartIcon } from '@heroicons/react/24/outline';
 import Price from 'components/price';
 import { DEFAULT_OPTION } from 'lib/constants';
 import { createUrl } from 'lib/utils';
-import { Loader } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useActionState, useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { CartActionResult, createCartAndSetCookie, redirectToCheckout } from './actions';
 import { useCart } from './cart-context';
@@ -16,7 +15,6 @@ import CloseCart from './close-cart';
 import { DeleteItemButton } from './delete-item-button';
 import { EditItemQuantityButton } from './edit-item-quantity-button';
 import OpenCart from './open-cart';
-import { useActionState } from 'react';
 
 type MerchandiseSearchParams = {
   [key: string]: string;
@@ -222,7 +220,7 @@ function CheckoutButton() {
       type="submit"
       className="w-full rounded-full p-4 text-sm font-medium opacity-90 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-60"
     >
-      <Loader className="mr-2 h-4 w-4 animate-spin" /> Proceed to Checkout
+    Proceed to Checkout
     </Button>
   );
 }
