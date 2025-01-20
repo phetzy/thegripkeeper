@@ -5,7 +5,7 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 import { addItem } from 'components/cart/actions';
 import { useProduct } from 'components/product/product-context';
 import { Product, ProductVariant } from 'lib/shopify/types';
-import { useActionState, useState, startTransition } from 'react';
+import { useState } from 'react';
 import { useCart } from './cart-context';
 
 function SubmitButton({
@@ -53,45 +53,47 @@ export function AddToCart({ product }: { product: Product }) {
   const { variants, availableForSale } = product;
   const { addCartItem } = useCart();
   const { state } = useProduct();
-  const [message, formAction] = useActionState(addItem, null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const variant = variants.find((variant: ProductVariant) =>
     variant.selectedOptions.every((option) => option.value === state[option.name.toLowerCase()])
   );
   const defaultVariantId = variants.length === 1 ? variants[0]?.id : undefined;
   const selectedVariantId = variant?.id || defaultVariantId;
-  const actionWithVariant = formAction.bind(null, selectedVariantId);
   const finalVariant = variants.find((variant) => variant.id === selectedVariantId)!;
 
   const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (!selectedVariantId) return;
+
     try {
       setLoading(true);
-      startTransition(async () => {
-        // First trigger the server action
-        await actionWithVariant();
-        // Then update the local cart state
+      setError(null);
+      
+      const result = await addItem(null, selectedVariantId);
+      if (result) {
+        setError(result);
+      } else {
         addCartItem(finalVariant, product);
-      });
-    } catch (error) {
-      console.error('Error adding item to cart:', error);
+      }
+    } catch (e) {
+      setError('Failed to add item to cart');
+      console.error(e);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
+    <div className="flex flex-col gap-2">
       <SubmitButton
         availableForSale={availableForSale}
         selectedVariantId={selectedVariantId}
-        loading={loading}
         onClick={handleAddToCart}
+        loading={loading}
       />
-      <p aria-live="polite" className="sr-only" role="status">
-        {message}
-      </p>
-    </form>
+      {error && <p className="text-sm text-red-500">{error}</p>}
+    </div>
   );
 }

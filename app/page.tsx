@@ -1,4 +1,3 @@
-import HeroNav from '@/components/hero-nav';
 import { Separator } from '@/components/ui/separator';
 import { ensureStartsWith } from 'lib/utils';
 import { Metadata } from 'next';
@@ -39,7 +38,6 @@ export default function HomePage() {
 
   return (
     <main className="relative flex flex-col items-center">
-      <HeroNav />
       <Suspense>
         <div className="fixed inset-0 -z-20">
           <div className="relative h-screen w-screen">
