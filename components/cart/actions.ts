@@ -176,5 +176,6 @@ export async function redirectToCheckout(_prevState: CartActionResult | null): P
 export async function createCartAndSetCookie() {
   const cart = await createCart();
   const cartId = cart.id;
-  cookies().set('cartId', cartId);
+  const cookieStore = cookies();
+  cookieStore.set('cartId', cartId);
 }

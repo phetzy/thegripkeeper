@@ -161,14 +161,26 @@ export function CartProvider({
 
   const updateCartItem = (merchandiseId: string, updateType: UpdateType) => {
     updateOptimisticCart({ type: 'UPDATE_ITEM', payload: { merchandiseId, updateType } });
+    setLastAction({
+      status: 'success',
+      message: `Cart ${updateType === 'delete' ? 'updated' : 'item removed'}`
+    });
   };
 
   const addCartItem = (variant: ProductVariant, product: Product) => {
     updateOptimisticCart({ type: 'ADD_ITEM', payload: { variant, product } });
+    setLastAction({
+      status: 'success',
+      message: 'Item added to cart'
+    });
   };
 
   const removeCartItem = (merchandiseId: string) => {
     updateOptimisticCart({ type: 'UPDATE_ITEM', payload: { merchandiseId, updateType: 'delete' } });
+    setLastAction({
+      status: 'success',
+      message: 'Item removed from cart'
+    });
   };
 
   const value = useMemo(
@@ -179,7 +191,7 @@ export function CartProvider({
       removeCartItem,
       updateCartItem
     }),
-    [optimisticCart, lastAction, removeCartItem]
+    [optimisticCart, lastAction, addCartItem, removeCartItem, updateCartItem]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
