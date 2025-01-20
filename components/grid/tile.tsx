@@ -36,6 +36,7 @@ export function GridTileImage({
           className={clsx('relative inset-0 h-full w-full object-cover transition duration-300 ease-in-out', {
             'group-hover:scale-110': isInteractive
           })}
+          alt={props.alt || 'Product image'}
           {...props}
         />
       ) : null}

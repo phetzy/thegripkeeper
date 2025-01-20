@@ -7,12 +7,14 @@ export default function NavigationHandler() {
   const router = useRouter();
 
   return (
-    <Button
-      variant={'default'}
-      onClick={() => router.push('/shop')}
-      onMouseOver={() => router.prefetch('/shop')}
-    >
-      Shop Now
-    </Button>
+    <div className='flex justify-center my-5'>
+      <Button
+        variant={'default'}
+        onClick={() => router.push('/shop')}
+        onMouseOver={() => router.prefetch('/shop')}
+      >
+        Shop Now
+      </Button>
+    </div>
   );
 }
