@@ -9,7 +9,6 @@ import { Loader } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Fragment, useEffect, useRef, useState } from 'react';
-import { useFormStatus } from 'react-dom';
 import { Button } from '../ui/button';
 import { CartActionResult, createCartAndSetCookie, redirectToCheckout } from './actions';
 import { useCart } from './cart-context';
@@ -48,7 +47,7 @@ export default function CartModal() {
       }
       quantityRef.current = cart?.totalQuantity;
     }
-  }, [isOpen, cart?.totalQuantity, quantityRef]);
+  }, [isOpen, cart?.totalQuantity]);
 
   return (
     <>
@@ -200,7 +199,7 @@ export default function CartModal() {
                     </div>
                   </div>
                   <form action={checkoutAction}>
-                    <CheckoutButton pending={checkoutState?.pending} />
+                    <CheckoutButton />
                     {checkoutState?.status === 'error' && (
                       <p aria-live="polite" className="mt-2 text-sm text-red-500" role="status">
                         {checkoutState.message}
@@ -217,14 +216,13 @@ export default function CartModal() {
   );
 }
 
-function CheckoutButton({ pending }: { pending: boolean }) {
+function CheckoutButton() {
   return (
     <Button
       type="submit"
       className="w-full rounded-full p-4 text-sm font-medium opacity-90 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-60"
-      disabled={pending}
     >
-      {pending ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : 'Proceed to Checkout'}
+      <Loader className="mr-2 h-4 w-4 animate-spin" /> Proceed to Checkout
     </Button>
   );
 }

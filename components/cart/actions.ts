@@ -15,7 +15,7 @@ export async function addItem(
   prevState: CartActionResult | null,
   selectedVariantId: string | undefined
 ): Promise<CartActionResult> {
-  let cartId = (await cookies()).get('cartId')?.value;
+  const cartId = (await cookies()).get('cartId')?.value;
 
   if (!cartId || !selectedVariantId) {
     return {
@@ -43,7 +43,7 @@ export async function removeItem(
   prevState: CartActionResult | null,
   merchandiseId: string
 ): Promise<CartActionResult> {
-  let cartId = (await cookies()).get('cartId')?.value;
+  const cartId = (await cookies()).get('cartId')?.value;
 
   if (!cartId) {
     return {
@@ -92,7 +92,7 @@ export async function updateItemQuantity(
     quantity: number;
   }
 ): Promise<CartActionResult> {
-  let cartId = (await cookies()).get('cartId')?.value;
+  const cartId = (await cookies()).get('cartId')?.value;
 
   if (!cartId) {
     return {
@@ -155,9 +155,9 @@ export async function updateItemQuantity(
   }
 }
 
-export async function redirectToCheckout(prevState: CartActionResult | null): Promise<CartActionResult> {
-  let cartId = (await cookies()).get('cartId')?.value;
-  let cart = await getCart(cartId);
+export async function redirectToCheckout(_prevState: CartActionResult | null): Promise<CartActionResult> {
+  const cartId = (await cookies()).get('cartId')?.value;
+  const cart = await getCart(cartId);
 
   if (!cart || !cartId) {
     return {

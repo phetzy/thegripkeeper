@@ -14,6 +14,7 @@ type CartContextType = {
   cart: Cart | undefined;
   updateCartItem: (merchandiseId: string, updateType: UpdateType) => void;
   addCartItem: (variant: ProductVariant, product: Product) => void;
+  removeCartItem: (merchandiseId: string) => void;
   lastAction: CartActionResult | null;
 };
 
@@ -166,14 +167,19 @@ export function CartProvider({
     updateOptimisticCart({ type: 'ADD_ITEM', payload: { variant, product } });
   };
 
+  const removeCartItem = (merchandiseId: string) => {
+    updateOptimisticCart({ type: 'UPDATE_ITEM', payload: { merchandiseId, updateType: 'delete' } });
+  };
+
   const value = useMemo(
     () => ({
       cart: optimisticCart,
-      updateCartItem,
+      lastAction,
       addCartItem,
-      lastAction
+      removeCartItem,
+      updateCartItem
     }),
-    [optimisticCart, lastAction]
+    [optimisticCart, lastAction, removeCartItem]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
