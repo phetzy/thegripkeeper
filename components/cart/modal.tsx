@@ -2,20 +2,22 @@
 
 import { Dialog, Transition } from '@headlessui/react';
 import { ShoppingCartIcon } from '@heroicons/react/24/outline';
-import LoadingDots from 'components/loading-dots';
 import Price from 'components/price';
 import { DEFAULT_OPTION } from 'lib/constants';
 import { createUrl } from 'lib/utils';
+import { Loader } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { createCartAndSetCookie, redirectToCheckout } from './actions';
+import { Button } from '../ui/button';
+import { CartActionResult, createCartAndSetCookie, redirectToCheckout } from './actions';
 import { useCart } from './cart-context';
 import CloseCart from './close-cart';
 import { DeleteItemButton } from './delete-item-button';
 import { EditItemQuantityButton } from './edit-item-quantity-button';
 import OpenCart from './open-cart';
+import { useActionState } from 'react';
 
 type MerchandiseSearchParams = {
   [key: string]: string;
@@ -25,6 +27,7 @@ export default function CartModal() {
   const { cart, updateCartItem } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const quantityRef = useRef(cart?.totalQuantity);
+  const [checkoutState, checkoutAction] = useActionState<CartActionResult | null, typeof redirectToCheckout>(redirectToCheckout, null);
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
 
@@ -196,8 +199,13 @@ export default function CartModal() {
                       />
                     </div>
                   </div>
-                  <form action={redirectToCheckout}>
-                    <CheckoutButton />
+                  <form action={checkoutAction}>
+                    <CheckoutButton pending={checkoutState?.pending} />
+                    {checkoutState?.status === 'error' && (
+                      <p aria-live="polite" className="mt-2 text-sm text-red-500" role="status">
+                        {checkoutState.message}
+                      </p>
+                    )}
                   </form>
                 </div>
               )}
@@ -209,16 +217,14 @@ export default function CartModal() {
   );
 }
 
-function CheckoutButton() {
-  const { pending } = useFormStatus();
-
+function CheckoutButton({ pending }: { pending: boolean }) {
   return (
-    <button
-      className="block w-full rounded-full bg-primary p-3 text-center text-sm font-medium text-primary-foreground hover:bg-primary/90"
+    <Button
       type="submit"
+      className="w-full rounded-full p-4 text-sm font-medium opacity-90 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-60"
       disabled={pending}
     >
-      {pending ? <LoadingDots className="bg-white" /> : 'Proceed to Checkout'}
-    </button>
+      {pending ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : 'Proceed to Checkout'}
+    </Button>
   );
 }

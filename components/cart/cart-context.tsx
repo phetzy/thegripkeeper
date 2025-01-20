@@ -1,7 +1,8 @@
 'use client';
 
 import type { Cart, CartItem, Product, ProductVariant } from 'lib/shopify/types';
-import React, { createContext, use, useCallback, useContext, useMemo, useOptimistic } from 'react';
+import React, { createContext, use, useContext, useMemo, useOptimistic, useState } from 'react';
+import type { CartActionResult } from './actions';
 
 type UpdateType = 'plus' | 'minus' | 'delete';
 
@@ -13,6 +14,7 @@ type CartContextType = {
   cart: Cart | undefined;
   updateCartItem: (merchandiseId: string, updateType: UpdateType) => void;
   addCartItem: (variant: ProductVariant, product: Product) => void;
+  lastAction: CartActionResult | null;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -153,26 +155,25 @@ export function CartProvider({
   cartPromise: Promise<Cart | undefined>;
 }) {
   const initialCart = use(cartPromise);
-  const [optimisticCart, updateOptimisticCart] = useOptimistic<Cart | undefined>(
-    initialCart,
-    cartReducer
-  );
+  const [optimisticCart, updateOptimisticCart] = useOptimistic(initialCart, cartReducer);
+  const [lastAction, setLastAction] = useState<CartActionResult | null>(null);
 
-  const updateCartItem = useCallback((merchandiseId: string, updateType: UpdateType) => {
+  const updateCartItem = (merchandiseId: string, updateType: UpdateType) => {
     updateOptimisticCart({ type: 'UPDATE_ITEM', payload: { merchandiseId, updateType } });
-  }, [updateOptimisticCart]);
+  };
 
-  const addCartItem = useCallback((variant: ProductVariant, product: Product) => {
+  const addCartItem = (variant: ProductVariant, product: Product) => {
     updateOptimisticCart({ type: 'ADD_ITEM', payload: { variant, product } });
-  }, [updateOptimisticCart]);
+  };
 
   const value = useMemo(
     () => ({
       cart: optimisticCart,
       updateCartItem,
-      addCartItem
+      addCartItem,
+      lastAction
     }),
-    [optimisticCart, updateCartItem, addCartItem]
+    [optimisticCart, lastAction]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
