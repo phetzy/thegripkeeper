@@ -12,7 +12,7 @@ export function DeleteItemButton({
   item: CartItem;
   optimisticUpdate: (merchandiseId: string, action: string) => void;
 }) {
-  const [message, formAction] = useActionState(removeItem, null);
+  const [message, formAction] = useActionState(removeItem, '');
   const merchandiseId = item.merchandise.id;
   const actionWithVariant = formAction.bind(null, merchandiseId);
 
@@ -31,7 +31,7 @@ export function DeleteItemButton({
         <XMarkIcon className="mx-[1px] h-4 w-4 text-white dark:text-black" />
       </button>
       <p aria-live="polite" className="sr-only" role="status">
-        {message}
+        {message || ''}
       </p>
     </form>
   );

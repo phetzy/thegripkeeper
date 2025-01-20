@@ -36,7 +36,7 @@ export function EditItemQuantityButton({
   type: 'plus' | 'minus';
   optimisticUpdate: (merchandiseId: string, action: string) => void;
 }) {
-  const [message, formAction] = useActionState(updateItemQuantity, null);
+  const [message, formAction] = useActionState(updateItemQuantity, '');
   const payload = {
     merchandiseId: item.merchandise.id,
     quantity: type === 'plus' ? item.quantity + 1 : item.quantity - 1
@@ -52,7 +52,7 @@ export function EditItemQuantityButton({
     >
       <SubmitButton type={type} />
       <p aria-live="polite" className="sr-only" role="status">
-        {message}
+        {message || ''}
       </p>
     </form>
   );
