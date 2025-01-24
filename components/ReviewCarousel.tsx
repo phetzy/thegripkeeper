@@ -51,7 +51,7 @@ export default function ReviewCarousel() {
       <CarouselContent>
         {reviews.map((review, index) => (
           <CarouselItem key={index} className="w-full">
-            <Card className="flex w-full flex-row space-x-4 p-6 h-full">
+            <Card className="flex w-[80%] flex-row space-x-4 p-6 h-full mx-auto">
               <CardContent className="flex w-1/4 items-center justify-center p-2 align-middle">
                 <img
                   src={review.imageUrl}

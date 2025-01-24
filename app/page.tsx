@@ -81,16 +81,19 @@ export default function HomePage() {
                 This product was developed after understanding that grip is one of the most
                 important things in regards to shooting a pistol faster with more control.
               </p>
+              <Separator className="my-4 w-8 mx-auto" />
               <p className="md:text-lg mx-6 mt-2 text-wrap text-center text-sm">
                 I tried using standard grip trainers off Amazon, 50, 100lb, etc, and those were
                 great at strengthening your grip, but I found myself wanting to combine the grip of
                 a pistol and the grip strengthener together.
               </p>
+              <Separator className="my-4 w-8 mx-auto" />
               <p className="md:text-lg mx-6 mt-2 text-wrap text-center text-sm">
                 You will be able to strengthen your grip on your pistols exact grip. A grip
                 strengthener that matches your pistol will lead to improved recoil control, and
                 stronger fundamentals since you will be able to train with it anywhere you wish.
               </p>
+              <Separator className="my-4 w-8 mx-auto" />
               <p className="md:text-lg mx-6 mt-2 text-wrap text-center text-sm">
                 The Grip Keeper is a diverse tool any gun lover can use. Competition shooters can use
                 this for warming up your grip before a stage. Police officers can use it in their
@@ -105,8 +108,8 @@ export default function HomePage() {
               <Separator className='my-8' />
               <ReviewCarousel />
               <Separator className='my-8' />
+              <NavigationHandler />
             </div>
-            <NavigationHandler />
           </div>
         </div>
         </Suspense>
