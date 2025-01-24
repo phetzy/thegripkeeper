@@ -1,3 +1,4 @@
+import ReviewCarousel from '@/components/ReviewCarousel';
 import { Separator } from '@/components/ui/separator';
 import { ensureStartsWith } from 'lib/utils';
 import { Metadata } from 'next';
@@ -101,6 +102,8 @@ export default function HomePage() {
                 Get a Grip Keeper that matches
                 your pistol and feel more confident with your every day gun.
               </h3>
+              <Separator className='my-8' />
+              <ReviewCarousel />
               <Separator className='my-8' />
             </div>
             <NavigationHandler />
