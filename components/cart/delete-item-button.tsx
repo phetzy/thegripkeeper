@@ -5,6 +5,14 @@ import { CartActionResult, removeItem } from 'components/cart/actions';
 import type { CartItem } from 'lib/shopify/types';
 import { useActionState, useTransition } from 'react';
 
+// Create a wrapper function that matches the expected type
+const removeItemAction = async (
+  prevState: CartActionResult | null,
+  merchandiseId: string
+) => {
+  return removeItem(prevState, merchandiseId);
+};
+
 export function DeleteItemButton({
   item,
   optimisticUpdate
@@ -13,8 +21,8 @@ export function DeleteItemButton({
   optimisticUpdate: (merchandiseId: string, updateType: 'delete') => void;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState<CartActionResult | null, typeof removeItem>(
-    removeItem,
+  const [state, formAction] = useActionState<CartActionResult | null, string>(
+    removeItemAction,
     null
   );
   const merchandiseId = item.merchandise.id;

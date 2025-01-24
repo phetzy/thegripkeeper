@@ -48,6 +48,8 @@ export default function HomePage() {
               className="object-cover [object-position:-300px_center] md:object-center"
               priority
               quality={100}
+              loading="eager"
+              fetchPriority="high"
             />
           </div>
         </div>

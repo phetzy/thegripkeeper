@@ -1,7 +1,7 @@
 'use client';
 
 import type { Cart, CartItem, Product, ProductVariant } from 'lib/shopify/types';
-import React, { createContext, use, useContext, useMemo, useOptimistic, useState } from 'react';
+import React, { createContext, use, useCallback, useContext, useMemo, useOptimistic, useState } from 'react';
 import type { CartActionResult } from './actions';
 
 type UpdateType = 'plus' | 'minus' | 'delete';
@@ -159,29 +159,29 @@ export function CartProvider({
   const [optimisticCart, updateOptimisticCart] = useOptimistic(initialCart, cartReducer);
   const [lastAction, setLastAction] = useState<CartActionResult | null>(null);
 
-  const updateCartItem = (merchandiseId: string, updateType: UpdateType) => {
+  const updateCartItem = useCallback((merchandiseId: string, updateType: UpdateType) => {
     updateOptimisticCart({ type: 'UPDATE_ITEM', payload: { merchandiseId, updateType } });
     setLastAction({
       status: 'success',
       message: `Cart ${updateType === 'delete' ? 'updated' : 'item removed'}`
     });
-  };
+  }, [updateOptimisticCart]);
 
-  const addCartItem = (variant: ProductVariant, product: Product) => {
+  const addCartItem = useCallback((variant: ProductVariant, product: Product) => {
     updateOptimisticCart({ type: 'ADD_ITEM', payload: { variant, product } });
     setLastAction({
       status: 'success',
       message: 'Item added to cart'
     });
-  };
+  }, [updateOptimisticCart]);
 
-  const removeCartItem = (merchandiseId: string) => {
+  const removeCartItem = useCallback((merchandiseId: string) => {
     updateOptimisticCart({ type: 'UPDATE_ITEM', payload: { merchandiseId, updateType: 'delete' } });
     setLastAction({
       status: 'success',
       message: 'Item removed from cart'
     });
-  };
+  }, [updateOptimisticCart]);
 
   const value = useMemo(
     () => ({

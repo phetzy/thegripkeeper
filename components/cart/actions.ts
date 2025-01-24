@@ -175,7 +175,16 @@ export async function redirectToCheckout(_prevState: CartActionResult | null): P
 
 export async function createCartAndSetCookie() {
   const cart = await createCart();
-  const cartId = cart.id;
-  const cookieStore = cookies();
-  cookieStore.set('cartId', cartId);
+  const cartId = cart?.id;
+  
+  if (!cartId) {
+    throw new Error('Failed to create cart: no cart ID returned');
+  }
+  
+  const cookieStore = await cookies();
+  cookieStore.set('cartId', cartId, { path: '/' });
+}
+
+export async function handleCheckoutAction(_formData: FormData): Promise<void> {
+  await redirectToCheckout(null);
 }

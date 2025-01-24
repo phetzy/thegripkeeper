@@ -7,9 +7,9 @@ import { DEFAULT_OPTION } from 'lib/constants';
 import { createUrl } from 'lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Fragment, useActionState, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
-import { CartActionResult, createCartAndSetCookie, redirectToCheckout } from './actions';
+import { createCartAndSetCookie, handleCheckoutAction } from './actions';
 import { useCart } from './cart-context';
 import CloseCart from './close-cart';
 import { DeleteItemButton } from './delete-item-button';
@@ -24,7 +24,6 @@ export default function CartModal() {
   const { cart, updateCartItem } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const quantityRef = useRef(cart?.totalQuantity);
-  const [checkoutState, checkoutAction] = useActionState<CartActionResult | null, typeof redirectToCheckout>(redirectToCheckout, null);
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
 
@@ -196,13 +195,8 @@ export default function CartModal() {
                       />
                     </div>
                   </div>
-                  <form action={checkoutAction}>
+                  <form action={handleCheckoutAction}>
                     <CheckoutButton />
-                    {checkoutState?.status === 'error' && (
-                      <p aria-live="polite" className="mt-2 text-sm text-red-500" role="status">
-                        {checkoutState.message}
-                      </p>
-                    )}
                   </form>
                 </div>
               )}
@@ -220,7 +214,7 @@ function CheckoutButton() {
       type="submit"
       className="w-full rounded-full p-4 text-sm font-medium opacity-90 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-60"
     >
-    Proceed to Checkout
+      Proceed to Checkout
     </Button>
   );
 }

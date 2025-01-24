@@ -6,6 +6,14 @@ import { CartActionResult, updateItemQuantity } from 'components/cart/actions';
 import type { CartItem } from 'lib/shopify/types';
 import { useActionState, useTransition } from 'react';
 
+// Create a wrapper function that matches the expected type
+const updateItemQuantityAction = async (
+  prevState: CartActionResult | null,
+  payload: { merchandiseId: string; quantity: number }
+) => {
+  return updateItemQuantity(prevState, payload);
+};
+
 function SubmitButton({ type, pending }: { type: 'plus' | 'minus'; pending: boolean }) {
   return (
     <button
@@ -38,10 +46,10 @@ export function EditItemQuantityButton({
   optimisticUpdate: (merchandiseId: string, updateType: 'plus' | 'minus') => void;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState<CartActionResult | null, typeof updateItemQuantity>(
-    updateItemQuantity,
-    null
-  );
+  const [state, formAction] = useActionState<
+    CartActionResult | null,
+    { merchandiseId: string; quantity: number }
+  >(updateItemQuantityAction, null);
   const merchandiseId = item.merchandise.id;
   const quantity = type === 'plus' ? item.quantity + 1 : item.quantity - 1;
   const payload = { merchandiseId, quantity };
