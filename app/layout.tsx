@@ -1,8 +1,8 @@
+import { cn } from '@/lib/utils';
+import { Analytics } from "@vercel/analytics/react";
+import { ThemeProvider } from 'next-themes';
 import { Inter as FontSans } from "next/font/google";
 import Footer from '../components/layout/footer';
-import { Toaster } from '@/components/ui/toaster';
-import { ThemeProvider } from 'next-themes';
-import { cn } from '@/lib/utils';
 import './globals.css';
 
 const fontSans = FontSans({
@@ -31,7 +31,7 @@ export default function RootLayout({
             <div className="flex-1">{children}</div>
             <Footer />
           </div>
-          <Toaster />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

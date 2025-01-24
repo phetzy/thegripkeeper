@@ -1,7 +1,9 @@
 'use client';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import { Suspense } from 'react';
 import { Card, CardContent } from './ui/card';
+import { Skeleton } from './ui/skeleton';
 
 const reviews = [
   {
@@ -51,15 +53,17 @@ export default function ReviewCarousel() {
       <CarouselContent>
         {reviews.map((review, index) => (
           <CarouselItem key={index} className="w-full">
-            <Card className="flex w-[80%] flex-row space-x-4 p-6 h-full mx-auto">
-              <CardContent className="flex w-1/4 items-center justify-center p-2 align-middle">
+            <Card className="flex w-[80%] flex-col md:flex-row space-x-0 md:space-x-4 space-y-4 md:space-y-0 p-6 h-full mx-auto">
+              <CardContent className="flex w-full md:w-1/4 items-center justify-center p-2 align-middle">
+                <Suspense fallback={<Skeleton className="w-full object-cover rounded-full justify-center" />}>
                 <img
                   src={review.imageUrl}
                   alt={review.name}
-                  className="w-full object-cover rounded-full justify-center"
+                  className="lg:w-full w-1/2 object-cover rounded-full justify-center"
                 />
+                </Suspense>
               </CardContent>
-              <CardContent className="flex w-3/4 flex-col justify-between p-2">
+              <CardContent className="flex w-full md:w-3/4 flex-col justify-between p-2">
                 <em className="text-sm align-middle">{review.comment}</em>
                 <div className="mt-2">
                   <p className="font-semibold">{review.name}</p>
