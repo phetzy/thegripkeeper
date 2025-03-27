@@ -59,12 +59,13 @@ export default async function ProductPage({
 
   if (!product) return notFound();
 
+  // Create JSON-LD with proper null checking for all fields
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
     description: product.description,
-    image: product.featuredImage.url,
+    ...(product.featuredImage?.url && { image: product.featuredImage.url }),
     offers: {
       '@type': 'AggregateOffer',
       availability: product.availableForSale
