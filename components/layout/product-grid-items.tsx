@@ -1,3 +1,4 @@
+import React from 'react';
 import Grid from 'components/grid';
 import { GridTileImage } from 'components/grid/tile';
 import { Product } from 'lib/shopify/types';
@@ -17,8 +18,8 @@ export default function ProductGridItems({ products }: { products: Product[] }) 
               alt={product.title}
               label={{
                 title: product.title,
-                amount: product.priceRange.maxVariantPrice.amount,
-                currencyCode: product.priceRange.maxVariantPrice.currencyCode
+                amount: product.priceRange.minVariantPrice.amount,
+                currencyCode: product.priceRange.minVariantPrice.currencyCode
               }}
               src={product.featuredImage?.url}
               fill
