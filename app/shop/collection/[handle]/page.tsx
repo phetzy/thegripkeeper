@@ -8,9 +8,10 @@ import { notFound } from 'next/navigation';
 export async function generateMetadata({
   params
 }: {
-  params: { handle: string };
+  params: Promise<{ handle: string }>;
 }): Promise<Metadata> {
-  const collection = await getCollection(params.handle);
+  const { handle } = await params;
+  const collection = await getCollection(handle);
 
   if (!collection) return notFound();
 
@@ -25,15 +26,17 @@ export default async function CategoryPage({
   params,
   searchParams
 }: {
-  params: { handle: string };
-  searchParams?: { [key: string]: string };
+  params: Promise<{ handle: string }>;
+  searchParams?: Promise<{ [key: string]: string }>;
 }) {
-  const { sort } = searchParams as { [key: string]: string };
+  const { handle } = await params;
+  const resolvedSearchParams = await searchParams || {};
+  const { sort } = resolvedSearchParams;
   const { sortKey, reverse } = sorting.find((item) => item.slug === sort) || defaultSort;
   
   // If you don't have these Shopify functions yet, you can create placeholder products
   const products = await getCollectionProducts({
-    collection: params.handle,
+    collection: handle,
     sortKey,
     reverse
   });
@@ -46,14 +49,22 @@ export default async function CategoryPage({
       title: 'Example Product',
       description: 'This is a placeholder product',
       featuredImage: {
-        url: ''
+        url: '/images/placeholder.png',
+        altText: 'Example Product',
+        width: 500,
+        height: 500
       },
       priceRange: {
         maxVariantPrice: {
           amount: '29.99',
           currencyCode: 'USD'
+        },
+        minVariantPrice: {
+          amount: '29.99',
+          currencyCode: 'USD'
         }
-      }
+      },
+      variants: []
     }
   ];
 

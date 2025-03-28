@@ -12,7 +12,7 @@ const collections = [
     icon: GripVertical,
     color: 'bg-blue-50',
     iconColor: 'text-blue-500',
-    href: '/shop/search?q=pistol-grip-trainers'
+    href: '/shop/collection/pistol-grip-trainers'
   },
   {
     id: 'training-pistols',
@@ -21,7 +21,7 @@ const collections = [
     icon: Hammer,
     color: 'bg-green-50',
     iconColor: 'text-green-500',
-    href: '/shop/search?q=training-pistols'
+    href: '/shop/collection/training-pistols'
   },
   {
     id: 'laser-training-pistols',
@@ -30,7 +30,7 @@ const collections = [
     icon: Zap,
     color: 'bg-red-50',
     iconColor: 'text-red-500',
-    href: '/shop/search?q=laser-training-pistols'
+    href: '/shop/collection/laser-training-pistols'
   }
 ];
 
