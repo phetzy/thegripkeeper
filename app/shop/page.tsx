@@ -1,5 +1,6 @@
 import { Carousel } from 'components/carousel';
 import CollectionsGrid from '@/components/collections/CollectionsGrid';
+import { fetchAllCollectionsWithParents } from '@/lib/shopify/fetchShopifyCollectionsWithParents';
 
 export const metadata = {
   description: 'High-performance ecommerce store built with Next.js, Vercel, and Shopify.',
@@ -8,11 +9,13 @@ export const metadata = {
   }
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const allCollections = await fetchAllCollectionsWithParents();
+  const topLevel = allCollections.filter((col) => !col.parent);
   return (
     <>
       <Carousel />
-      <CollectionsGrid />
+      <CollectionsGrid collections={topLevel} />
     </>
   );
 }

@@ -22,6 +22,7 @@ export type CartProduct = {
 export type CartItem = {
   id: string | undefined;
   quantity: number;
+  attributes?: { key: string; value: string }[];
   cost: {
     totalAmount: Money;
   };
@@ -71,6 +72,7 @@ export type Page = {
 export type Product = Omit<ShopifyProduct, 'variants' | 'images'> & {
   variants: ProductVariant[];
   images: Image[];
+  metafields?: Metafield[];
 };
 
 export type ProductOption = {
@@ -88,6 +90,15 @@ export type ProductVariant = {
     value: string;
   }[];
   price: Money;
+  customAttributes?: { key: string; value: string }[];
+  metafields?: Metafield[];
+};
+
+export type Metafield = {
+  id: string;
+  namespace: string;
+  key: string;
+  value: string;
 };
 
 export type SEO = {
@@ -154,11 +165,16 @@ export type ShopifyAddToCartOperation = {
       cart: ShopifyCart;
     };
   };
+  errors?: Array<{
+    message: string;
+    path: string[];
+  }>;
   variables: {
     cartId: string;
     lines: {
       merchandiseId: string;
       quantity: number;
+      attributes?: { key: string; value: string }[];
     }[];
   };
 };
@@ -181,12 +197,17 @@ export type ShopifyUpdateCartOperation = {
       cart: ShopifyCart;
     };
   };
+  errors?: Array<{
+    message: string;
+    path: string[];
+  }>;
   variables: {
     cartId: string;
     lines: {
       id: string;
       merchandiseId: string;
       quantity: number;
+      attributes?: { key: string; value: string }[];
     }[];
   };
 };

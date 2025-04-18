@@ -1,9 +1,8 @@
 import { HIDDEN_PRODUCT_TAG, SHOPIFY_GRAPHQL_API_ENDPOINT, TAGS } from 'lib/constants';
 import { isShopifyError } from 'lib/type-guards';
 import { ensureStartsWith } from 'lib/utils';
-import { revalidateTag } from 'next/cache';
-import { headers } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+// Server-only imports moved to server.ts for SSR compatibility.
+
 import {
   addToCartMutation,
   createCartMutation,
@@ -126,9 +125,27 @@ const reshapeCart = (cart: ShopifyCart): Cart => {
     };
   }
 
+  // Log the original cart line attributes before reshaping
+  console.log('Original cart line attributes:', 
+    JSON.stringify(cart.lines.edges.map(edge => ({
+      id: edge.node.id,
+      attributes: edge.node.attributes
+    })), null, 2)
+  );
+  
+  const lines = removeEdgesAndNodes(cart.lines);
+  
+  // Log the reshaped cart lines to check if attributes are preserved
+  console.log('Reshaped cart line attributes:', 
+    JSON.stringify(lines.map(line => ({
+      id: line.id,
+      attributes: line.attributes
+    })), null, 2)
+  );
+
   return {
     ...cart,
-    lines: removeEdgesAndNodes(cart.lines)
+    lines
   };
 };
 
@@ -212,17 +229,66 @@ export async function createCart(): Promise<Cart> {
 
 export async function addToCart(
   cartId: string,
-  lines: { merchandiseId: string; quantity: number }[]
+  lines: { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] }[]
 ): Promise<Cart> {
-  const res = await shopifyFetch<ShopifyAddToCartOperation>({
-    query: addToCartMutation,
-    variables: {
-      cartId,
-      lines
-    },
-    cache: 'no-store'
-  });
-  return reshapeCart(res.body.data.cartLinesAdd.cart);
+  console.log('Raw input to addToCart function:', JSON.stringify(lines, null, 2));
+  
+  // Create the payload with proper attribute format for Shopify API
+  const payload = {
+    cartId,
+    lines: lines.map(line => {
+      // Ensure attributes are properly formatted - Shopify requires non-null attributes
+      const formattedAttributes = line.attributes && line.attributes.length > 0
+        ? line.attributes.map(attr => ({
+            key: attr.key,
+            value: attr.value
+          }))
+        : [];  // Change from undefined to empty array to ensure Shopify always gets an array
+
+      console.log('Line attributes after formatting:', JSON.stringify(formattedAttributes, null, 2));
+        
+      return {
+        merchandiseId: line.merchandiseId,
+        quantity: line.quantity,
+        attributes: formattedAttributes
+      };
+    })
+  };
+  
+  console.log('Final addToCart API payload:', JSON.stringify(payload, null, 2));
+  
+  try {
+    const res = await shopifyFetch<ShopifyAddToCartOperation>({
+      query: addToCartMutation,
+      variables: payload,
+      cache: 'no-store'
+    });
+    
+    // Log the entire response to debug
+    console.log('addToCart raw response:', JSON.stringify(res.body, null, 2));
+    
+    if (res.body.errors && res.body.errors.length > 0) {
+      console.error('Shopify API errors:', JSON.stringify(res.body.errors, null, 2));
+      throw new Error('Error adding item to cart: ' + res.body.errors[0]?.message || 'Unknown error');
+    }
+    
+    const cart = res.body.data.cartLinesAdd.cart;
+    console.log('Original cart line attributes:', JSON.stringify(cart.lines.edges.map(edge => ({
+      id: edge.node.id,
+      attributes: edge.node.attributes
+    })), null, 2));
+    
+    const reshapedCart = reshapeCart(cart);
+    console.log('Reshaped cart line attributes:', JSON.stringify(reshapedCart.lines.map(line => ({
+      id: line.id,
+      attributes: line.attributes
+    })), null, 2));
+    
+    return reshapedCart;
+  } catch (error) {
+    console.error('Error in addToCart:', error);
+    throw error;
+  }
 }
 
 export async function removeFromCart(cartId: string, lineIds: string[]): Promise<Cart> {
@@ -240,18 +306,38 @@ export async function removeFromCart(cartId: string, lineIds: string[]): Promise
 
 export async function updateCart(
   cartId: string,
-  lines: { id: string; merchandiseId: string; quantity: number }[]
+  lines: { id: string; merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] }[]
 ): Promise<Cart> {
-  const res = await shopifyFetch<ShopifyUpdateCartOperation>({
-    query: editCartItemsMutation,
-    variables: {
+  try {
+    const payload = {
       cartId,
-      lines
-    },
-    cache: 'no-store'
-  });
+      lines: lines.map(line => ({
+        id: line.id,
+        merchandiseId: line.merchandiseId,
+        quantity: line.quantity,
+        attributes: line.attributes && line.attributes.length > 0 ? line.attributes : [] // Always send an array
+      }))
+    };
+    
+    console.log('updateCart payload:', JSON.stringify(payload, null, 2));
+    
+    const res = await shopifyFetch<ShopifyUpdateCartOperation>({
+      query: editCartItemsMutation,
+      variables: payload,
+      cache: 'no-store'
+    });
 
-  return reshapeCart(res.body.data.cartLinesUpdate.cart);
+    console.log('updateCart response:', JSON.stringify(res.body, null, 2));
+    
+    if (res.body.errors && res.body.errors.length > 0) {
+      throw new Error(res.body.errors[0]?.message || 'Error updating cart');
+    }
+
+    return reshapeCart(res.body.data.cartLinesUpdate.cart);
+  } catch (error) {
+    console.error('Error in updateCart:', error);
+    throw error;
+  }
 }
 
 export async function getCart(cartId: string | undefined): Promise<Cart | undefined> {
@@ -270,7 +356,18 @@ export async function getCart(cartId: string | undefined): Promise<Cart | undefi
     return undefined;
   }
 
-  return reshapeCart(res.body.data.cart);
+  console.log('Raw cart response from Shopify:', JSON.stringify(res.body.data.cart, null, 2));
+  
+  const reshapedCart = reshapeCart(res.body.data.cart);
+  
+  console.log('Reshaped cart for frontend:', 
+    JSON.stringify(reshapedCart.lines.map(line => ({ 
+      id: line.id, 
+      attributes: line.attributes 
+    })), null, 2)
+  );
+  
+  return reshapedCart;
 }
 
 export async function getCollection(handle: string): Promise<Collection | undefined> {

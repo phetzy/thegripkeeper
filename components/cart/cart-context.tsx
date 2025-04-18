@@ -8,12 +8,12 @@ type UpdateType = 'plus' | 'minus' | 'delete';
 
 type CartAction =
   | { type: 'UPDATE_ITEM'; payload: { merchandiseId: string; updateType: UpdateType } }
-  | { type: 'ADD_ITEM'; payload: { variant: ProductVariant; product: Product } };
+  | { type: 'ADD_ITEM'; payload: { variant: ProductVariant; product: Product; customAttributes?: { key: string; value: string }[] } };
 
 type CartContextType = {
   cart: Cart | undefined;
   updateCartItem: (merchandiseId: string, updateType: UpdateType) => void;
-  addCartItem: (variant: ProductVariant, product: Product) => void;
+  addCartItem: (variant: ProductVariant, product: Product, customAttributes?: { key: string; value: string }[]) => void;
   removeCartItem: (merchandiseId: string) => void;
   lastAction: CartActionResult | null;
 };
@@ -36,6 +36,7 @@ function updateCartItem(item: CartItem, updateType: UpdateType): CartItem | null
   return {
     ...item,
     quantity: newQuantity,
+    attributes: item.attributes, // Preserve attributes
     cost: {
       ...item.cost,
       totalAmount: {
@@ -49,7 +50,8 @@ function updateCartItem(item: CartItem, updateType: UpdateType): CartItem | null
 function createOrUpdateCartItem(
   existingItem: CartItem | undefined,
   variant: ProductVariant,
-  product: Product
+  product: Product,
+  customAttributes?: { key: string; value: string }[]
 ): CartItem {
   const quantity = existingItem ? existingItem.quantity + 1 : 1;
   const totalAmount = calculateItemCost(quantity, variant.price.amount);
@@ -57,6 +59,7 @@ function createOrUpdateCartItem(
   return {
     id: existingItem?.id,
     quantity,
+    attributes: customAttributes,
     cost: {
       totalAmount: {
         amount: totalAmount,
@@ -133,9 +136,9 @@ function cartReducer(state: Cart | undefined, action: CartAction): Cart {
       return { ...currentCart, ...updateCartTotals(updatedLines), lines: updatedLines };
     }
     case 'ADD_ITEM': {
-      const { variant, product } = action.payload;
+      const { variant, product, customAttributes } = action.payload;
       const existingItem = currentCart.lines.find((item) => item.merchandise.id === variant.id);
-      const updatedItem = createOrUpdateCartItem(existingItem, variant, product);
+      const updatedItem = createOrUpdateCartItem(existingItem, variant, product, customAttributes);
 
       const updatedLines = existingItem
         ? currentCart.lines.map((item) => (item.merchandise.id === variant.id ? updatedItem : item))
@@ -167,8 +170,8 @@ export function CartProvider({
     });
   }, [updateOptimisticCart]);
 
-  const addCartItem = useCallback((variant: ProductVariant, product: Product) => {
-    updateOptimisticCart({ type: 'ADD_ITEM', payload: { variant, product } });
+  const addCartItem = useCallback((variant: ProductVariant, product: Product, customAttributes?: { key: string; value: string }[]) => {
+    updateOptimisticCart({ type: 'ADD_ITEM', payload: { variant, product, customAttributes } });
     setLastAction({
       status: 'success',
       message: 'Item added to cart'

@@ -9,7 +9,7 @@ import { useActionState, useTransition } from 'react';
 // Create a wrapper function that matches the expected type
 const updateItemQuantityAction = async (
   prevState: CartActionResult | null,
-  payload: { merchandiseId: string; quantity: number }
+  payload: { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] }
 ) => {
   return updateItemQuantity(prevState, payload);
 };
@@ -48,17 +48,25 @@ export function EditItemQuantityButton({
   const [isPending, startTransition] = useTransition();
   const [state, formAction] = useActionState<
     CartActionResult | null,
-    { merchandiseId: string; quantity: number }
+    { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] }
   >(updateItemQuantityAction, null);
+
   const merchandiseId = item.merchandise.id;
   const quantity = type === 'plus' ? item.quantity + 1 : item.quantity - 1;
-  const payload = { merchandiseId, quantity };
+  
+  // Make sure to include the existing attributes when updating quantity
+  const payload = { 
+    merchandiseId, 
+    quantity,
+    attributes: item.attributes && item.attributes.length > 0 ? [...item.attributes] : undefined
+  };
 
   return (
     <form
       action={() =>
         startTransition(async () => {
           optimisticUpdate(merchandiseId, type);
+          console.log('Updating cart item with payload:', JSON.stringify(payload, null, 2));
           await formAction(payload);
         })
       }

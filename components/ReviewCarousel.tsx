@@ -53,19 +53,19 @@ export default function ReviewCarousel() {
       <CarouselContent>
         {reviews.map((review, index) => (
           <CarouselItem key={index} className="w-full">
-            <Card className="flex w-[80%] flex-col md:flex-row space-x-0 md:space-x-4 space-y-4 md:space-y-0 p-6 h-full mx-auto">
-              <CardContent className="flex w-full md:w-1/4 items-center justify-center p-2 align-middle">
-                <Suspense fallback={<Skeleton className="w-full object-cover rounded-full justify-center" />}>
-                <img
-                  src={review.imageUrl}
-                  alt={review.name}
-                  className="lg:w-full w-1/2 object-cover rounded-full justify-center"
-                />
+            <Card className="mx-auto flex w-full max-w-xl flex-col items-center space-y-4 rounded-xl bg-zinc-900 p-6 shadow-lg md:flex-row md:space-x-6 md:space-y-0">
+              <CardContent className="flex flex-shrink-0 items-center justify-center p-0">
+                <Suspense fallback={<Skeleton className="h-32 w-32 rounded-full object-cover" />}>
+                  <img
+                    src={review.imageUrl}
+                    alt={review.name}
+                    className="h-32 w-32 rounded-full border-2 border-zinc-800 object-cover shadow"
+                  />
                 </Suspense>
               </CardContent>
-              <CardContent className="flex w-full md:w-3/4 flex-col justify-between p-2">
-                <em className="text-sm align-middle">{review.comment}</em>
-                <div className="mt-2">
+              <CardContent className="flex flex-1 flex-col items-center justify-center p-0 text-center md:items-start md:text-left">
+                <em className="text-sm">{review.comment}</em>
+                <div className="mt-3">
                   <p className="font-semibold">{review.name}</p>
                   <p className="text-sm text-muted-foreground">{review.credential}</p>
                 </div>

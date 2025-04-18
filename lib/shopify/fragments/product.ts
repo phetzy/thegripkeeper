@@ -38,8 +38,34 @@ const productFragment = /* GraphQL */ `
             amount
             currencyCode
           }
+          metafields(
+            identifiers: [
+              { namespace: "custom", key: "resistance" },
+              { namespace: "custom", key: "trigger_type" },
+              { namespace: "custom", key: "available_resistances" },
+              { namespace: "custom", key: "available_trigger_types" }
+            ]
+          ) {
+            id
+            namespace
+            key
+            value
+          }
         }
       }
+    }
+    metafields(
+      identifiers: [
+        { namespace: "custom", key: "resistance" },
+        { namespace: "custom", key: "trigger_type" },
+        { namespace: "custom", key: "available_resistances" },
+        { namespace: "custom", key: "available_trigger_types" }
+      ]
+    ) {
+      id
+      namespace
+      key
+      value
     }
     featuredImage {
       ...image

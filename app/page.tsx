@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 import DelayedChevron from '../components/delayed-chevron';
 import NavigationHandler from '../components/navigation-handler';
 import Hero from '../public/images/hero.png';
+import Logo from '../public/images/logo.png';
 
 const { TWITTER_CREATOR, TWITTER_SITE, SITE_NAME } = process.env;
 const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
@@ -59,14 +60,17 @@ export default function HomePage() {
           <div className="flex h-full flex-col items-center justify-center">
             {/* Title */}
             <div className="flex justify-center">
-              <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-white lg:text-5xl">
-                Grip Keeper
-              </h1>
-            </div>
-            <div className="my-5 flex max-w-2xl justify-center">
-              <h3 className="text-md scroll-m-20 font-semibold tracking-tight text-white lg:text-2xl">
-                Never lose your grip
-              </h3>
+              <Image
+                src={Logo}
+                alt="GripKeeper Logo"
+                width={600}
+                height={600}
+                className="object-center"
+                priority
+                quality={100}
+                loading="eager"
+                fetchPriority="high"
+              />
             </div>
           </div>
         </div>

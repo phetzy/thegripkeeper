@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { createContext, useCallback, useContext, useMemo, useOptimistic } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useOptimistic, startTransition, useEffect } from 'react';
 
 type ProductState = {
   [key: string]: string;
@@ -18,6 +18,7 @@ type ProductContextType = {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export function ProductProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const getInitialState = () => {
@@ -38,13 +39,26 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
   const updateOption = useCallback((name: string, value: string) => {
     const newState = { [name]: value };
-    setOptimisticState(newState);
+    
+    // Update URL with new parameters
+    const params = new URLSearchParams(window.location.search);
+    params.set(name, value);
+    
+    // Update optimistic state
+    startTransition(() => {
+      setOptimisticState(newState);
+      // Update URL
+      router.push(`?${params.toString()}`, { scroll: false });
+    });
+    
     return { ...state, ...newState };
-  }, [state, setOptimisticState]);
+  }, [state, setOptimisticState, router]);
 
   const updateImage = useCallback((index: string) => {
     const newState = { image: index };
-    setOptimisticState(newState);
+    startTransition(() => {
+      setOptimisticState(newState);
+    });
     return { ...state, ...newState };
   }, [state, setOptimisticState]);
 

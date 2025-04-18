@@ -143,6 +143,14 @@ export default function CartModal() {
                                         {item.merchandise.title}
                                       </p>
                                     ) : null}
+                                    {console.log('Cart item attributes:', item.id, item.attributes)}
+                                    {item.attributes && item.attributes.length > 0 && (
+                                      <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                                        {item.attributes.map((attr, idx) => (
+                                          <p key={idx}>{attr.key}: {attr.value}</p>
+                                        ))}
+                                      </div>
+                                    )}
                                   </div>
                                 </Link>
                               </div>
