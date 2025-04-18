@@ -50,16 +50,20 @@ export default function Confetti() {
     let startTime = Date.now();
     let alpha = 1;
     let fadeStarted = false;
+    const ANIMATION_DURATION = 5000; // 5 seconds
+    const FADE_DURATION = 1500; // 1.5 seconds
 
     function drawConfetti() {
       ctx.clearRect(0, 0, width, height);
       const now = Date.now();
-      // Start fading after 1.5s
-      if (now - startTime > 1500 && !fadeStarted) {
+      // Start fading after 5s
+      if (now - startTime > ANIMATION_DURATION && !fadeStarted) {
         fadeStarted = true;
+        startTime = now; // reuse startTime for fade timing
       }
       if (fadeStarted) {
-        alpha -= 0.05;
+        // Fade alpha smoothly over FADE_DURATION ms
+        alpha = 1 - (now - startTime) / FADE_DURATION;
         if (alpha <= 0) {
           setVisible(false);
           return;

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Logo from '../../../public/images/logo.png';
 
+import { Button } from '@/components/ui/button';
 import Confetti from './Confetti';
 
 export default function CartThankYou() {
@@ -33,12 +34,11 @@ export default function CartThankYou() {
             </div>
       <h1 className="text-3xl font-bold mb-4">Thank you for your order!</h1>
       <p className="text-neutral-500 mb-8">You can close this page or continue shopping.</p>
-      <button
-        className="px-6 py-3 rounded bg-black text-white font-semibold hover:bg-neutral-800 transition-colors"
+      <Button
         onClick={() => router.push("/")}
       >
         Return to Store
-      </button>
+      </Button>
     </main>
   );
 }
