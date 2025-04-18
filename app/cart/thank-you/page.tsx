@@ -35,7 +35,7 @@ export default function CartThankYou() {
       <h1 className="text-3xl font-bold mb-4">Thank you for your order!</h1>
       <p className="text-neutral-500 mb-8">You can close this page or continue shopping.</p>
       <Button
-        onClick={() => router.push("/")}
+        onClick={() => router.push("/shop")}
       >
         Return to Store
       </Button>
