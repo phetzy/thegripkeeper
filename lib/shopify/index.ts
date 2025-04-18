@@ -244,28 +244,19 @@ export async function addToCart(
   
   // console.log (removed for production)('Final addToCart API payload:', JSON.stringify(payload, null, 2));
   
-  try {
-    const res = await shopifyFetch<ShopifyAddToCartOperation>({
-      query: addToCartMutation,
-      variables: payload,
-      cache: 'no-store'
-    });
-    
-    // Log the entire response to debug
-    // console.log (removed for production)('addToCart raw response:', JSON.stringify(res.body, null, 2));
-    
-    if (res.body.errors && res.body.errors.length > 0) {
-      // console.error (removed for production)('Shopify API errors:', JSON.stringify(res.body.errors, null, 2));
-      throw new Error('Error adding item to cart: ' + res.body.errors[0]?.message || 'Unknown error');
-    }
-    
-    const cart = res.body.data.cartLinesAdd.cart;
-    const reshapedCart = reshapeCart(cart);
-    return reshapedCart;
-  } catch (error) {
-    // console.error (removed for production)('Error in addToCart:', error);
-    throw error;
+  const res = await shopifyFetch<ShopifyAddToCartOperation>({
+    query: addToCartMutation,
+    variables: payload,
+    cache: 'no-store'
+  });
+
+  if (res.body.errors && res.body.errors.length > 0) {
+    throw new Error('Error adding item to cart: ' + res.body.errors[0]?.message || 'Unknown error');
   }
+
+  const cart = res.body.data.cartLinesAdd.cart;
+  const reshapedCart = reshapeCart(cart);
+  return reshapedCart;
 }
 
 export async function removeFromCart(cartId: string, lineIds: string[]): Promise<Cart> {
@@ -285,37 +276,29 @@ export async function updateCart(
   cartId: string,
   lines: { id: string; merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] }[]
 ): Promise<Cart> {
-  try {
-    const payload = {
-      cartId,
-      lines: lines.map(line => ({
-        id: line.id,
-        merchandiseId: line.merchandiseId,
-        quantity: line.quantity,
-        attributes: line.attributes && line.attributes.length > 0 ? line.attributes : [] // Always send an array
-      })
-      )
-    };
-    
-    // console.log (removed for production)('updateCart payload:', JSON.stringify(payload, null, 2));
-    
-    const res = await shopifyFetch<ShopifyUpdateCartOperation>({
-      query: editCartItemsMutation,
-      variables: payload,
-      cache: 'no-store'
-    });
+  const payload = {
+    cartId,
+    lines: lines.map(line => ({
+      id: line.id,
+      merchandiseId: line.merchandiseId,
+      quantity: line.quantity,
+      attributes: line.attributes && line.attributes.length > 0 ? line.attributes : [] // Always send an array
+    }))
+  };
 
-    // console.log (removed for production)('updateCart response:', JSON.stringify(res.body, null, 2));
-    
-    if (res.body.errors && res.body.errors.length > 0) {
-      throw new Error(res.body.errors[0]?.message || 'Error updating cart');
-    }
+  const res = await shopifyFetch<ShopifyUpdateCartOperation>({
+    query: editCartItemsMutation,
+    variables: payload,
+    cache: 'no-store'
+  });
 
-    return reshapeCart(res.body.data.cartLinesUpdate.cart);
-  } catch (error) {
-    // console.error (removed for production)('Error in updateCart:', error);
-    throw error;
+  if (res.body.errors && res.body.errors.length > 0) {
+    throw new Error('Error updating cart: ' + res.body.errors[0]?.message || 'Unknown error');
   }
+
+  const cart = res.body.data.cartLinesUpdate.cart;
+  const reshapedCart = reshapeCart(cart);
+  return reshapedCart;
 }
 
 export async function getCart(cartId: string | undefined): Promise<Cart | undefined> {
