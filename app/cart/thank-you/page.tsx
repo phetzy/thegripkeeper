@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Logo from '../../../public/images/logo.png';
 
+import Confetti from './Confetti';
+
 export default function CartThankYou() {
   const router = useRouter();
 
@@ -14,8 +16,9 @@ export default function CartThankYou() {
   }, []);
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen py-24">
-      <div className="flex justify-center">
+    <main className="flex flex-col items-center justify-center min-h-screen py-24 relative overflow-hidden">
+      <Confetti />
+      <div className="flex justify-center mb-8">
         <Image
           src={Logo}
           alt="GripKeeper Logo"
@@ -29,7 +32,6 @@ export default function CartThankYou() {
               />
             </div>
       <h1 className="text-3xl font-bold mb-4">Thank you for your order!</h1>
-      <p className="mb-2">Your cart has been cleared.</p>
       <p className="text-neutral-500 mb-8">You can close this page or continue shopping.</p>
       <button
         className="px-6 py-3 rounded bg-black text-white font-semibold hover:bg-neutral-800 transition-colors"
