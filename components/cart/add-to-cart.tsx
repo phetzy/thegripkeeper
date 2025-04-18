@@ -118,7 +118,7 @@ export function AddToCart({ product }: { product: Product }) {
     if (finalVariant?.metafields) {
       const variantMetafield = finalVariant.metafields.find(m => m && m.key === key);
       if (variantMetafield?.value) {
-        console.log(`Found ${key} in variant metafields:`, variantMetafield.value);
+        // console.log(`Found ${key} in variant metafields:`, variantMetafield.value);
         value = variantMetafield.value;
       }
     }
@@ -127,7 +127,7 @@ export function AddToCart({ product }: { product: Product }) {
     if (!value && product.metafields) {
       const productMetafield = product.metafields.find(m => m && m.key === key);
       if (productMetafield?.value) {
-        console.log(`Found ${key} in product metafields:`, productMetafield.value);
+        // console.log(`Found ${key} in product metafields:`, productMetafield.value);
         value = productMetafield.value;
       }
     }
@@ -153,26 +153,26 @@ export function AddToCart({ product }: { product: Product }) {
   // Always attempt to push resistance and trigger type, even if empty
   if (selectedResistance) {
     customAttributes.push({ key: 'resistance', value: selectedResistance });
-    console.log('Adding resistance attribute:', selectedResistance);
+    // console.log('Adding resistance attribute:', selectedResistance);
   } else {
     console.warn('No resistance selected or found in metafields.');
   }
   if (selectedTriggerType) {
     customAttributes.push({ key: 'trigger_type', value: selectedTriggerType });
-    console.log('Adding trigger_type attribute:', selectedTriggerType);
+    // console.log('Adding trigger_type attribute:', selectedTriggerType);
   } else {
     console.warn('No trigger type selected or found in metafields.');
   }
   // Log the customAttributes array
-  console.log('Final customAttributes array before addItem:', JSON.stringify(customAttributes, null, 2));
+  // console.log('Final customAttributes array before addItem:', JSON.stringify(customAttributes, null, 2));
 
   // Log available metafields for debugging
-  console.log('Product metafields:', productMetafields);
-  console.log('Product variant metafields:', variantMetafields);
-  console.log('Selected variant ID:', selectedVariantId);
-  console.log('Final variant found:', finalVariant ? 'Yes' : 'No');
-  console.log('Selected resistance (from state or metafields):', selectedResistance);
-  console.log('Selected trigger type (from state or metafields):', selectedTriggerType);
+  // console.log('Product metafields:', productMetafields);
+  // console.log('Product variant metafields:', variantMetafields);
+  // console.log('Selected variant ID:', selectedVariantId);
+  // console.log('Final variant found:', finalVariant ? 'Yes' : 'No');
+  // console.log('Selected resistance (from state or metafields):', selectedResistance);
+  // console.log('Selected trigger type (from state or metafields):', selectedTriggerType);
 
   const isResistanceSelected = !!selectedResistance;
   const isTriggerTypeSelected = !!selectedTriggerType;
@@ -189,7 +189,7 @@ export function AddToCart({ product }: { product: Product }) {
         if (customAttributes.length === 0) {
           console.warn('customAttributes is empty! Resistance/TriggerType may not be set.');
         } else {
-          console.log('Adding to cart with custom attributes:', JSON.stringify(customAttributes, null, 2));
+          // console.log('Adding to cart with custom attributes:', JSON.stringify(customAttributes, null, 2));
         }
         // First add to local cart context
         addCartItem(finalVariant, product, customAttributes.length > 0 ? customAttributes : undefined);
@@ -197,7 +197,7 @@ export function AddToCart({ product }: { product: Product }) {
         const attributesToSend = customAttributes.length > 0 
           ? customAttributes.map(attr => ({ ...attr })) 
           : undefined;
-        console.log('Sending attributes to server action:', JSON.stringify(attributesToSend, null, 2));
+        // console.log('Sending attributes to server action:', JSON.stringify(attributesToSend, null, 2));
         // Don't use the bound function - pass parameters directly to avoid any binding issues
         const result = await addItem(null, { selectedVariantId, customAttributes: attributesToSend });
         setMessage(result);

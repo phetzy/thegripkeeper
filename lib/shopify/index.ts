@@ -339,11 +339,11 @@ export async function getCart(cartId: string | undefined): Promise<Cart | undefi
   const reshapedCart = reshapeCart(res.body.data.cart);
   
   // console.log (removed for production)('Reshaped cart for frontend:', 
-    JSON.stringify(reshapedCart.lines.map(line => ({ 
-      id: line.id, 
-      attributes: line.attributes 
-    })), null, 2)
-  );
+    // JSON.stringify(reshapedCart.lines.map(line => ({ 
+      // id: line.id, 
+      // attributes: line.attributes 
+    // })), null, 2)
+  // );
   
   return reshapedCart;
 }

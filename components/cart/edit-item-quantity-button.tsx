@@ -63,7 +63,7 @@ export function EditItemQuantityButton({
       action={() =>
         startTransition(async () => {
           optimisticUpdate(merchandiseId, type);
-          console.log('Updating cart item with payload:', JSON.stringify(payload, null, 2));
+          // console.log('Updating cart item with payload:', JSON.stringify(payload, null, 2));
           const result = await updateItemQuantityAction(state, payload);
           setState(result);
         })

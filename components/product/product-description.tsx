@@ -51,7 +51,7 @@ export function ProductDescription({ product }: { product: Product }) {
     availableOptionsKey: string,
     defaultOptions: string[]
   ): string[] => {
-    console.log(`Checking for ${availableOptionsKey} metafield`);
+    // console.log(`Checking for ${availableOptionsKey} metafield`);
     
     // First check the product-level metafields for the available options list
     try {
@@ -63,18 +63,18 @@ export function ProductDescription({ product }: { product: Product }) {
             // Try to parse as JSON array
             const parsedOptions = JSON.parse(optionsMetafield.value);
             if (Array.isArray(parsedOptions)) {
-              console.log(`Found ${availableOptionsKey} metafield with options:`, parsedOptions);
+              // console.log(`Found ${availableOptionsKey} metafield with options:`, parsedOptions);
               return parsedOptions;
             }
           } catch (e) {
             // If not a valid JSON array, check if it's a comma-separated list
             if (typeof optionsMetafield.value === 'string' && optionsMetafield.value.includes(',')) {
               const options = optionsMetafield.value.split(',').map(opt => opt.trim());
-              console.log(`Found ${availableOptionsKey} as comma-separated list:`, options);
+              // console.log(`Found ${availableOptionsKey} as comma-separated list:`, options);
               return options;
             }
             // Otherwise, just return the value as a single-item array
-            console.log(`Found ${availableOptionsKey} as single value:`, [optionsMetafield.value]);
+            // console.log(`Found ${availableOptionsKey} as single value:`, [optionsMetafield.value]);
             return [optionsMetafield.value];
           }
         }
@@ -110,7 +110,7 @@ export function ProductDescription({ product }: { product: Product }) {
       // If we found any values, return them as an array
       if (uniqueValues.size > 0) {
         const values = Array.from(uniqueValues);
-        console.log(`Collected unique ${metafieldKey} values from variants:`, values);
+        // console.log(`Collected unique ${metafieldKey} values from variants:`, values);
         return values;
       }
     } catch (e) {
@@ -118,7 +118,7 @@ export function ProductDescription({ product }: { product: Product }) {
     }
     
     // Fall back to default options if nothing found
-    console.log(`Using default options for ${metafieldKey}:`, defaultOptions);
+    // console.log(`Using default options for ${metafieldKey}:`, defaultOptions);
     return defaultOptions;
   };
   
@@ -131,11 +131,11 @@ export function ProductDescription({ product }: { product: Product }) {
   const triggerTypeOptions = getMetafieldOptions('trigger_type', 'available_trigger_types', defaultTriggerOptions);
   
   // Debug logging for metafields
-  console.log('Product metafields:', product.metafields || []);
-  console.log('Selected variant:', selectedVariant?.id);
-  console.log('Selected variant metafields:', selectedVariant?.metafields || []);
-  console.log('Available resistance options:', resistanceOptions);
-  console.log('Available trigger type options:', triggerTypeOptions);
+  // console.log('Product metafields:', product.metafields || []);
+  // console.log('Selected variant:', selectedVariant?.id);
+  // console.log('Selected variant metafields:', selectedVariant?.metafields || []);
+  // console.log('Available resistance options:', resistanceOptions);
+  // console.log('Available trigger type options:', triggerTypeOptions);
 
   return (
     <>
