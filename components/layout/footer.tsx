@@ -1,9 +1,10 @@
 import Link from 'next/link';
 
 import FooterMenu from 'components/layout/footer-menu';
-import LogoSquare from 'components/logo-square';
 import { getMenu } from 'lib/shopify';
+import Image from 'next/image';
 import { Suspense } from 'react';
+import Logo from '../../public/images/logo.png';
 
 const { COMPANY_NAME, SITE_NAME } = process.env;
 
@@ -19,8 +20,7 @@ export default async function Footer() {
       <div className="flex w-full flex-col gap-6 border-t border-border px-6 py-12 text-sm md:flex-row md:gap-12 md:px-4 min-[1320px]:px-0">
         <div className="mx-8">
           <Link className="flex items-center gap-2 text-black md:pt-1 dark:text-white" href="/">
-            <LogoSquare size="sm" />
-            <span className="uppercase">{SITE_NAME}</span>
+            <Image src={Logo} alt={SITE_NAME!} width={125} height={125} />
           </Link>
         </div>
         <Suspense

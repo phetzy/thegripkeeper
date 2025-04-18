@@ -2,14 +2,15 @@ import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
-  NavigationMenuList,
-} from "@/components/ui/navigation-menu";
+  NavigationMenuList
+} from '@/components/ui/navigation-menu';
 import CartModal from 'components/cart/modal';
-import LogoSquare from 'components/logo-square';
 import { getMenu } from 'lib/shopify';
 import { Menu } from 'lib/shopify/types';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import Logo from '../../../public/images/logo.png';
 import MobileMenu from './mobile-menu';
 import Search, { SearchSkeleton } from './search';
 
@@ -34,23 +35,21 @@ export async function Navbar() {
               prefetch={true}
               className="mr-2 flex w-full items-center justify-center md:w-auto lg:mr-6"
             >
-              <LogoSquare />
-              <div className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block">
-                {SITE_NAME}
-              </div>
+              <Image src={Logo} alt={SITE_NAME!} width={200} height={200} />
             </Link>
-            
+
             {menu.length ? (
               <NavigationMenu className="hidden md:flex">
                 <NavigationMenuList>
                   {menu.map((item: Menu) => (
                     <NavigationMenuItem key={item.title}>
-                      <NavigationMenuLink
-                        asChild
-                        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                      >
+                      <NavigationMenuLink asChild>
                         <Link href={item.path}>
-                          {item.title}
+                          {item.title === 'Home' ? (
+                            <Image src={Logo} alt={item.title} width={32} height={32} />
+                          ) : (
+                            item.title
+                          )}
                         </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
