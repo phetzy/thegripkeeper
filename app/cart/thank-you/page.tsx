@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Logo from '../public/images/logo.png';
+import Logo from '../../../public/images/logo.png';
 
 export default function CartThankYou() {
   const router = useRouter();
