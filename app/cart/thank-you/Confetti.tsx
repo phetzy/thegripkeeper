@@ -54,6 +54,7 @@ export default function Confetti() {
     const FADE_DURATION = 1500; // 1.5 seconds
 
     function drawConfetti() {
+      if (!ctx) return;
       ctx.clearRect(0, 0, width, height);
       const now = Date.now();
       // Start fading after 5s
