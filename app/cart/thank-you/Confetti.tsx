@@ -1,9 +1,12 @@
 "use client";
 import { useEffect, useRef } from "react";
 
+import { useState } from "react";
+
 export default function Confetti() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const [visible, setVisible] = useState(true);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -32,9 +35,9 @@ export default function Confetti() {
         color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
         x: randomRange(0, width),
         y: randomRange(-20, -height),
-        w: randomRange(8, 16),
-        h: randomRange(8, 16),
-        r: randomRange(0, 2 * Math.PI),
+        w: randomRange(4, 12), // thinner for rectangles
+        h: randomRange(12, 28), // longer for rectangles
+        angle: randomRange(0, 2 * Math.PI),
         d: randomRange(1, 2),
         tilt: randomRange(-10, 10),
         tiltAngle: randomRange(0, Math.PI),
@@ -44,8 +47,27 @@ export default function Confetti() {
       });
     }
 
+    let startTime = Date.now();
+    let alpha = 1;
+    let fadeStarted = false;
+
     function drawConfetti() {
       ctx.clearRect(0, 0, width, height);
+      const now = Date.now();
+      // Start fading after 1.5s
+      if (now - startTime > 1500 && !fadeStarted) {
+        fadeStarted = true;
+      }
+      if (fadeStarted) {
+        alpha -= 0.05;
+        if (alpha <= 0) {
+          setVisible(false);
+          return;
+        }
+        ctx.globalAlpha = Math.max(alpha, 0);
+      } else {
+        ctx.globalAlpha = 1;
+      }
       confetti.forEach((c) => {
         c.tiltAngle += c.tiltAngleIncremental;
         c.x += c.vx;
@@ -53,14 +75,12 @@ export default function Confetti() {
         c.vy = Math.min(c.vy + gravity * c.d, terminalVelocity);
         c.vx *= 1 - drag;
         c.tilt = Math.sin(c.tiltAngle) * 15;
-
         ctx.save();
         ctx.fillStyle = c.color;
-        ctx.beginPath();
-        ctx.ellipse(c.x + c.tilt, c.y, c.w, c.h, c.r, 0, 2 * Math.PI);
-        ctx.fill();
+        ctx.translate(c.x + c.tilt, c.y);
+        ctx.rotate(c.angle);
+        ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
         ctx.restore();
-
         // Reset confetti to top
         if (c.y > height + 20) {
           c.x = randomRange(0, width);
@@ -74,6 +94,7 @@ export default function Confetti() {
     return () => cancelAnimationFrame(animationId);
   }, []);
 
+  if (!visible) return null;
   return (
     <canvas
       ref={canvasRef}
@@ -85,6 +106,7 @@ export default function Confetti() {
         height: "100vh",
         pointerEvents: "none",
         zIndex: 50,
+        transition: "opacity 0.5s"
       }}
       aria-hidden="true"
     />
