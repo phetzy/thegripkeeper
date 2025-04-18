@@ -31,40 +31,47 @@ type ShopifyCollectionsResponse = {
   };
 };
 
-export async function fetchAllCollectionsWithParents(): Promise<ShopifyCollection[]> {
-  const query: string = `
-    query GetCollectionsWithParents($first: Int!) {
-      collections(first: $first) {
-        edges {
-          node {
-            id
-            title
-            handle
-            image {
-              url
-              altText
-            }
-            metafield(namespace: "navigation", key: "parent") {
-              value
-            }
+const GET_COLLECTIONS_WITH_PARENTS = `
+  query GetCollectionsWithParents($first: Int!) {
+    collections(first: $first) {
+      edges {
+        node {
+          id
+          title
+          handle
+          image {
+            url
+            altText
+          }
+          metafield(namespace: "navigation", key: "parent") {
+            value
           }
         }
       }
     }
-  `;
-  const variables = { first: 100 };
-  const res = await shopifyFetch<any>({ query, variables });
-  const data = res.body.data;
-  const collections: ShopifyCollection[] =
-    data?.collections?.edges?.map(({ node }: { node: any }) => ({
-      id: node.id,
-      title: node.title,
-      handle: node.handle,
-      parent: node.metafield?.value || null,
-      image: node.image || null
-    })) || [];
-  return collections;
+  }
+`;
+
+export async function fetchShopifyCollectionsWithParents(): Promise<ShopifyCollection[]> {
+  try {
+    const variables = { first: 100 };
+    const res = await shopifyFetch<any>({ query: GET_COLLECTIONS_WITH_PARENTS, variables });
+    const data = res.body.data;
+    const collections: ShopifyCollection[] =
+      data?.collections?.edges?.map(({ node }: { node: any }) => ({
+        id: node.id,
+        title: node.title,
+        handle: node.handle,
+        parent: node.metafield?.value || null,
+        image: node.image || null
+      })) || [];
+    return collections;
+  } catch (e) {
+    // Fail gracefully if Shopify API call fails
+    return [];
+  }
 }
+
 
 // Build a navigation tree from the flat collection list
 export type NavigationNode = ShopifyCollection & { children: NavigationNode[] };

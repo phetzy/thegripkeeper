@@ -128,23 +128,7 @@ const reshapeCart = (cart: ShopifyCart): Cart => {
     };
   }
 
-  // Log the original cart line attributes before reshaping
-  console.log('Original cart line attributes:', 
-    JSON.stringify(cart.lines.edges.map(edge => ({
-      id: edge.node.id,
-      attributes: edge.node.attributes
-    })), null, 2)
-  );
-  
   const lines = removeEdgesAndNodes(cart.lines);
-  
-  // Log the reshaped cart lines to check if attributes are preserved
-  console.log('Reshaped cart line attributes:', 
-    JSON.stringify(lines.map(line => ({
-      id: line.id,
-      attributes: line.attributes
-    })), null, 2)
-  );
 
   return {
     ...cart,
@@ -234,7 +218,7 @@ export async function addToCart(
   cartId: string,
   lines: { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] }[]
 ): Promise<Cart> {
-  console.log('Raw input to addToCart function:', JSON.stringify(lines, null, 2));
+  // console.log (removed for production)('Raw input to addToCart function:', JSON.stringify(lines, null, 2));
   
   // Create the payload with proper attribute format for Shopify API
   const payload = {
@@ -248,7 +232,7 @@ export async function addToCart(
           }))
         : [];  // Change from undefined to empty array to ensure Shopify always gets an array
 
-      console.log('Line attributes after formatting:', JSON.stringify(formattedAttributes, null, 2));
+      // console.log (removed for production)('Line attributes after formatting:', JSON.stringify(formattedAttributes, null, 2));
         
       return {
         merchandiseId: line.merchandiseId,
@@ -258,7 +242,7 @@ export async function addToCart(
     })
   };
   
-  console.log('Final addToCart API payload:', JSON.stringify(payload, null, 2));
+  // console.log (removed for production)('Final addToCart API payload:', JSON.stringify(payload, null, 2));
   
   try {
     const res = await shopifyFetch<ShopifyAddToCartOperation>({
@@ -268,28 +252,18 @@ export async function addToCart(
     });
     
     // Log the entire response to debug
-    console.log('addToCart raw response:', JSON.stringify(res.body, null, 2));
+    // console.log (removed for production)('addToCart raw response:', JSON.stringify(res.body, null, 2));
     
     if (res.body.errors && res.body.errors.length > 0) {
-      console.error('Shopify API errors:', JSON.stringify(res.body.errors, null, 2));
+      // console.error (removed for production)('Shopify API errors:', JSON.stringify(res.body.errors, null, 2));
       throw new Error('Error adding item to cart: ' + res.body.errors[0]?.message || 'Unknown error');
     }
     
     const cart = res.body.data.cartLinesAdd.cart;
-    console.log('Original cart line attributes:', JSON.stringify(cart.lines.edges.map(edge => ({
-      id: edge.node.id,
-      attributes: edge.node.attributes
-    })), null, 2));
-    
     const reshapedCart = reshapeCart(cart);
-    console.log('Reshaped cart line attributes:', JSON.stringify(reshapedCart.lines.map(line => ({
-      id: line.id,
-      attributes: line.attributes
-    })), null, 2));
-    
     return reshapedCart;
   } catch (error) {
-    console.error('Error in addToCart:', error);
+    // console.error (removed for production)('Error in addToCart:', error);
     throw error;
   }
 }
@@ -319,10 +293,11 @@ export async function updateCart(
         merchandiseId: line.merchandiseId,
         quantity: line.quantity,
         attributes: line.attributes && line.attributes.length > 0 ? line.attributes : [] // Always send an array
-      }))
+      })
+      )
     };
     
-    console.log('updateCart payload:', JSON.stringify(payload, null, 2));
+    // console.log (removed for production)('updateCart payload:', JSON.stringify(payload, null, 2));
     
     const res = await shopifyFetch<ShopifyUpdateCartOperation>({
       query: editCartItemsMutation,
@@ -330,7 +305,7 @@ export async function updateCart(
       cache: 'no-store'
     });
 
-    console.log('updateCart response:', JSON.stringify(res.body, null, 2));
+    // console.log (removed for production)('updateCart response:', JSON.stringify(res.body, null, 2));
     
     if (res.body.errors && res.body.errors.length > 0) {
       throw new Error(res.body.errors[0]?.message || 'Error updating cart');
@@ -338,7 +313,7 @@ export async function updateCart(
 
     return reshapeCart(res.body.data.cartLinesUpdate.cart);
   } catch (error) {
-    console.error('Error in updateCart:', error);
+    // console.error (removed for production)('Error in updateCart:', error);
     throw error;
   }
 }
@@ -359,11 +334,11 @@ export async function getCart(cartId: string | undefined): Promise<Cart | undefi
     return undefined;
   }
 
-  console.log('Raw cart response from Shopify:', JSON.stringify(res.body.data.cart, null, 2));
+  // console.log (removed for production)('Raw cart response from Shopify:', JSON.stringify(res.body.data.cart, null, 2));
   
   const reshapedCart = reshapeCart(res.body.data.cart);
   
-  console.log('Reshaped cart for frontend:', 
+  // console.log (removed for production)('Reshaped cart for frontend:', 
     JSON.stringify(reshapedCart.lines.map(line => ({ 
       id: line.id, 
       attributes: line.attributes 
@@ -405,7 +380,7 @@ export async function getCollectionProducts({
   });
 
   if (!res.body.data.collection) {
-    console.log(`No collection found for \`${collection}\``);
+    // console.log (removed for production)(`No collection found for \`${collection}\``);
     return [];
   }
 
@@ -441,20 +416,25 @@ export async function getCollections(): Promise<Collection[]> {
 }
 
 export async function getMenu(handle: string): Promise<Menu[]> {
-  const res = await shopifyFetch<ShopifyMenuOperation>({
-    query: getMenuQuery,
-    tags: [TAGS.collections],
-    variables: {
-      handle
+  try {
+    const res = await shopifyFetch<ShopifyMenuOperation>({
+      query: getMenuQuery,
+      tags: [TAGS.collections],
+      variables: {
+        handle
+      }
+    });
+    if (!res.body?.data?.menu?.items) {
+      return [];
     }
-  });
-
-  return (
-    res.body?.data?.menu?.items.map((item: { title: string; url: string }) => ({
+    return res.body.data.menu.items.map((item: { title: string; url: string }) => ({
       title: item.title,
       path: item.url.replace(domain, '').replace('/collections', '/search').replace('/pages', '')
-    })) || []
-  );
+    }));
+  } catch (e) {
+    // Fail gracefully if menu is missing or API call fails
+    return [];
+  }
 }
 
 export async function getPage(handle: string): Promise<Page> {
@@ -534,7 +514,7 @@ export async function revalidate(req: NextRequest): Promise<NextResponse> {
   const isProductUpdate = productWebhooks.includes(topic);
 
   if (!secret || secret !== process.env.SHOPIFY_REVALIDATION_SECRET) {
-    console.error('Invalid revalidation secret.');
+    // console.error (removed for production)('Invalid revalidation secret.');
     return NextResponse.json({ status: 401 });
   }
 

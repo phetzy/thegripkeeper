@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchShopifyCollectionProducts } from '@/lib/shopify/fetchShopifyCollectionProducts';
 import {
   buildNavigationTree,
-  fetchAllCollectionsWithParents
+  fetchShopifyCollectionsWithParents
 } from '@/lib/shopify/fetchShopifyCollectionsWithParents';
 import { notFound } from 'next/navigation';
 
@@ -45,7 +45,10 @@ export default async function ShopDynamicPage({
   const resolvedParams = await params;
   const slug = resolvedParams.slug || [];
 
-  const collections = await fetchAllCollectionsWithParents();
+  const collections = await fetchShopifyCollectionsWithParents();
+  if (!collections || collections.length === 0) {
+    return notFound();
+  }
   const navigationTree = buildNavigationTree(collections);
 
   const node = findNodeBySlugs(navigationTree, slug);
