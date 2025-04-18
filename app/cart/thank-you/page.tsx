@@ -3,7 +3,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Logo from '../public/images/logo-square.png';
+import Logo from '../../public/images/logo-square.png';
 
 export default function CartThankYou() {
   const router = useRouter();
