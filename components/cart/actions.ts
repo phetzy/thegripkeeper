@@ -32,7 +32,7 @@ export async function addItem(
     // Ensure Shopify-safe keys (lowercase, underscores)
     const attributes = customAttributes && customAttributes.length > 0 
       ? customAttributes.map(attr => {
-          let safeKey = attr.key.toLowerCase().replace(/\s+/g, '_');
+          const safeKey = attr.key.toLowerCase().replace(/\s+/g, '_');
           return { key: safeKey, value: attr.value };
         })
       : [];

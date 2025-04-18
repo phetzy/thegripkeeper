@@ -53,10 +53,10 @@ export async function fetchAllCollectionsWithParents(): Promise<ShopifyCollectio
     }
   `;
   const variables = { first: 100 };
-  const res = await shopifyFetch<ShopifyCollectionsResponse>({ query, variables });
+  const res = await shopifyFetch<any>({ query, variables });
   const data = res.body.data;
   const collections: ShopifyCollection[] =
-    data?.collections?.edges?.map(({ node }) => ({
+    data?.collections?.edges?.map(({ node }: { node: any }) => ({
       id: node.id,
       title: node.title,
       handle: node.handle,
@@ -67,9 +67,11 @@ export async function fetchAllCollectionsWithParents(): Promise<ShopifyCollectio
 }
 
 // Build a navigation tree from the flat collection list
-export function buildNavigationTree(collections: ShopifyCollection[]) {
-  const handleToNode: Record<string, any> = {};
-  const roots: any[] = [];
+export type NavigationNode = ShopifyCollection & { children: NavigationNode[] };
+
+export function buildNavigationTree(collections: ShopifyCollection[]): NavigationNode[] {
+  const handleToNode: Record<string, NavigationNode> = {};
+  const roots: NavigationNode[] = [];
 
   // First, create all nodes
   for (const col of collections) {
@@ -78,10 +80,14 @@ export function buildNavigationTree(collections: ShopifyCollection[]) {
 
   // Then, assign children to parents
   for (const col of collections) {
-    if (col.parent && handleToNode[col.parent]) {
-      handleToNode[col.parent].children.push(handleToNode[col.handle]);
-    } else {
-      roots.push(handleToNode[col.handle]);
+    if (
+      col.parent &&
+      handleToNode[col.parent] !== undefined &&
+      handleToNode[col.handle] !== undefined
+    ) {
+      handleToNode[col.parent]!.children.push(handleToNode[col.handle]!);
+    } else if (handleToNode[col.handle]) {
+      roots.push(handleToNode[col.handle]!);
     }
   }
 

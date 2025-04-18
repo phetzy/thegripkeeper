@@ -43,30 +43,38 @@ export default async function CategoryPage({
   
   // Fallback to placeholder items if no products are found
   const placeholderProducts = products?.length > 0 ? products : [
-    {
-      id: 'placeholder-1',
-      handle: 'placeholder-product',
-      title: 'Example Product',
-      description: 'This is a placeholder product',
-      featuredImage: {
-        url: '/images/placeholder.png',
-        altText: 'Example Product',
-        width: 500,
-        height: 500
+  {
+    id: 'placeholder-1',
+    handle: 'placeholder-product',
+    title: 'Example Product',
+    description: 'This is a placeholder product',
+    descriptionHtml: '<p>This is a placeholder product</p>',
+    featuredImage: {
+      url: '/images/placeholder.png',
+      altText: 'Example Product',
+      width: 500,
+      height: 500
+    },
+    priceRange: {
+      maxVariantPrice: {
+        amount: '29.99',
+        currencyCode: 'USD'
       },
-      priceRange: {
-        maxVariantPrice: {
-          amount: '29.99',
-          currencyCode: 'USD'
-        },
-        minVariantPrice: {
-          amount: '29.99',
-          currencyCode: 'USD'
-        }
-      },
-      variants: []
-    }
-  ];
+      minVariantPrice: {
+        amount: '29.99',
+        currencyCode: 'USD'
+      }
+    },
+    availableForSale: true,
+    options: [],
+    variants: [],
+    images: [],
+    metafields: [],
+    seo: { title: 'Example Product', description: 'SEO description' },
+    tags: [],
+    updatedAt: new Date().toISOString()
+  }
+];
 
   return (
     <section>

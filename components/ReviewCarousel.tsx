@@ -1,5 +1,6 @@
 'use client';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import Image from 'next/image';
 import Autoplay from 'embla-carousel-autoplay';
 import { Suspense } from 'react';
 import { Card, CardContent } from './ui/card';
@@ -56,10 +57,12 @@ export default function ReviewCarousel() {
             <Card className="mx-auto flex w-full max-w-xl flex-col items-center space-y-4 rounded-xl bg-zinc-900 p-6 shadow-lg md:flex-row md:space-x-6 md:space-y-0">
               <CardContent className="flex flex-shrink-0 items-center justify-center p-0">
                 <Suspense fallback={<Skeleton className="h-32 w-32 rounded-full object-cover" />}>
-                  <img
+                  <Image
                     src={review.imageUrl}
                     alt={review.name}
                     className="h-32 w-32 rounded-full border-2 border-zinc-800 object-cover shadow"
+                    width={128}
+                    height={128}
                   />
                 </Suspense>
               </CardContent>

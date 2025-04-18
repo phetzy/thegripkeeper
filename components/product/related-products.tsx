@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { useHorizontalScroll } from 'hooks/useHorizontalScroll';
 import { GridTileImage } from 'components/grid/tile';
 
+import type { Product } from 'lib/shopify/types';
+
 interface RelatedProductsProps {
-  products: any[];
+  products: Product[];
 }
 
 export function RelatedProducts({ products }: RelatedProductsProps) {

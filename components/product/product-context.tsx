@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { createContext, useCallback, useContext, useMemo, useOptimistic, startTransition, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useOptimistic, startTransition } from 'react';
 
 type ProductState = {
   [key: string]: string;

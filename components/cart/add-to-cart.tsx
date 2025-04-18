@@ -2,10 +2,10 @@
 
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
-import { addItem } from 'components/cart/actions';
+import { addItem, CartActionResult } from 'components/cart/actions';
 import { useProduct } from 'components/product/product-context';
-import { Product, ProductVariant, Metafield } from 'lib/shopify/types';
-import { useActionState } from 'react';
+import { Product, ProductVariant } from 'lib/shopify/types';
+import { useState } from 'react';
 import { useCart } from './cart-context';
 
 function SubmitButton({
@@ -88,7 +88,18 @@ export function AddToCart({ product }: { product: Product }) {
   const { variants, availableForSale } = product;
   const { addCartItem } = useCart();
   const { state } = useProduct();
-  const [message, formAction] = useActionState(addItem, null);
+  const [message, setMessage] = useState<CartActionResult | null>(null);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    // You may want to gather customAttributes from form or context if needed
+    const payload = {
+      selectedVariantId,
+      customAttributes: [] // Add any custom attributes if needed
+    };
+    const result = await addItem(null, payload);
+    setMessage(result);
+  }
 
   const variant = variants.find((variant: ProductVariant) =>
     variant.selectedOptions.every((option) => option.value === state[option.name.toLowerCase()])
@@ -188,7 +199,8 @@ export function AddToCart({ product }: { product: Product }) {
           : undefined;
         console.log('Sending attributes to server action:', JSON.stringify(attributesToSend, null, 2));
         // Don't use the bound function - pass parameters directly to avoid any binding issues
-        await formAction({ selectedVariantId, customAttributes: attributesToSend });
+        const result = await addItem(null, { selectedVariantId, customAttributes: attributesToSend });
+        setMessage(result);
       }}
     >
       <SubmitButton 

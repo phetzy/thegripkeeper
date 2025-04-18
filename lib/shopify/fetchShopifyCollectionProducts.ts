@@ -1,7 +1,7 @@
 import { shopifyFetch } from '@/lib/shopify';
 
 // Fetch products from a Shopify collection by handle
-export async function fetchShopifyCollectionProducts(collectionHandle) {
+export async function fetchShopifyCollectionProducts(collectionHandle: string) {
   const query = `
     query CollectionByHandle($handle: String!) {
       collectionByHandle(handle: $handle) {
@@ -30,9 +30,9 @@ export async function fetchShopifyCollectionProducts(collectionHandle) {
     }
   `;
   const variables = { handle: collectionHandle };
-  const res = await shopifyFetch({ query, variables });
+  const res = await shopifyFetch<any>({ query, variables });
 
   const products =
-    res?.body?.data?.collectionByHandle?.products?.edges?.map((edge) => edge.node) || [];
+    res?.body?.data?.collectionByHandle?.products?.edges?.map((edge: any) => edge.node) || [];
   return products;
 }

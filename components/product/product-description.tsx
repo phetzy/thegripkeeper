@@ -3,7 +3,7 @@
 import { AddToCart } from 'components/cart/add-to-cart';
 import Price from 'components/price';
 import Prose from 'components/prose';
-import { Product, ProductVariant } from 'lib/shopify/types';
+import { Product } from 'lib/shopify/types';
 import { VariantSelector } from './variant-selector';
 import { useProduct } from './product-context';
 import { useMemo } from 'react';

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchShopifyCollectionProducts } from '@/lib/shopify/fetchShopifyCollectionProducts';
@@ -33,6 +34,8 @@ function findNodeBySlugs(tree: any[], slugs: string[]): any | null {
   }
   return node;
 }
+
+import type { JSX } from 'react';
 
 export default async function ShopDynamicPage({
   params
@@ -70,10 +73,13 @@ export default async function ShopDynamicPage({
               >
                 <AspectRatio ratio={1} className="mb-4 p-4 rounded">
                   {child.image?.url ? (
-                    <img
+                    <Image
                       src={child.image.url}
                       alt={child.image.altText || cleanTitle(child.title)}
                       className="w-full rounded object-cover shadow"
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      priority={false}
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center rounded bg-gray-200 text-gray-400">
@@ -124,10 +130,13 @@ export default async function ShopDynamicPage({
               >
                 <AspectRatio ratio={1} className="mb-4 p-4">
                   {product.featuredImage?.url ? (
-                    <img
+                    <Image
                       src={product.featuredImage.url}
                       alt={product.title}
                       className="h-full w-full rounded object-cover shadow"
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      priority={false}
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center rounded bg-gray-200 text-gray-400">

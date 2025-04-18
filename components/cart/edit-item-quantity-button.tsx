@@ -4,7 +4,7 @@ import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { CartActionResult, updateItemQuantity } from 'components/cart/actions';
 import type { CartItem } from 'lib/shopify/types';
-import { useActionState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 
 // Create a wrapper function that matches the expected type
 const updateItemQuantityAction = async (
@@ -46,10 +46,7 @@ export function EditItemQuantityButton({
   optimisticUpdate: (merchandiseId: string, updateType: 'plus' | 'minus') => void;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState<
-    CartActionResult | null,
-    { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] }
-  >(updateItemQuantityAction, null);
+  const [state, setState] = useState<CartActionResult | null>(null);
 
   const merchandiseId = item.merchandise.id;
   const quantity = type === 'plus' ? item.quantity + 1 : item.quantity - 1;
@@ -67,7 +64,8 @@ export function EditItemQuantityButton({
         startTransition(async () => {
           optimisticUpdate(merchandiseId, type);
           console.log('Updating cart item with payload:', JSON.stringify(payload, null, 2));
-          await formAction(payload);
+          const result = await updateItemQuantityAction(state, payload);
+          setState(result);
         })
       }
     >
